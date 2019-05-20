@@ -18,14 +18,14 @@ type cfg struct {
 	container interface{}
 }
 
-func GetInstance(container interface{}) (*cfg, *interface{}) {
+func GetInstance(container interface{}) *cfg {
 	cfg := cfg{}
 	cfg.App = os.Args[0]
 	cfg.Path = []string{"/etc/" + cfg.App + "/", "$HOME/."}
 	cfg.Type = "json"
 	cfg.container = container
 	cfg.vp = viper.New()
-	return &cfg, &cfg.container
+	return &cfg
 }
 
 func (cfg cfg) Load() error {
@@ -63,7 +63,8 @@ func (cfg cfg) Load() error {
 			}
 		}
 	}
-	return cfg.vp.Unmarshal(&cfg.container)
+
+	return cfg.vp.Unmarshal(cfg.container)
 
 }
 
@@ -107,6 +108,7 @@ func (cfg cfg) IsSet(key string) bool {
 
 func (cfg cfg) Set(key string, value interface{}) {
 	cfg.vp.Set(key, value)
+	cfg.vp.Unmarshal(cfg.container)
 }
 
 func (cfg cfg) Update() error {

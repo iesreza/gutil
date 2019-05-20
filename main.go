@@ -23,15 +23,17 @@ type Config struct {
 func main() {
 	var config = Config{}
 
-	configurator, _ := configuration.GetInstance(config)
+	configurator := configuration.GetInstance(&config)
 	configurator.App = "gutil"
 	configurator.Load()
 
-	configurator.Set("IntegerValue", 10)
+	configurator.Set("IntegerValue", 25)
+	config.IntegerValue = 40
 	err := configurator.Update()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	fmt.Println(config.IntegerValue)
 
 	fmt.Println(str.S(1.00000045).Trim("5").Quote().ReplaceAll("0", "9"))
