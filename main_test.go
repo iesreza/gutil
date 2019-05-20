@@ -2,24 +2,28 @@ package main
 
 import (
 	"fmt"
-	"gutil/logger"
-	"gutil/path"
-	"gutil/str"
+	"github.com/iesreza/gutil/configuration"
+	"github.com/iesreza/gutil/logger"
+	"github.com/iesreza/gutil/path"
 )
 
 var log = logger.New()
 
-func main()  {
+func main() {
 
-	fmt.Println( str.S(1.00000045).Trim("5").Quote().ReplaceAll("0","9") )
+	configurator, config := configuration.GetInstance(&Config{})
+	configurator.Load()
 
-	logExample()
-	fileExample()
+	fmt.Println(config)
+	//return
+	//fmt.Println( str.S(1.00000045).Trim("5").Quote().ReplaceAll("0","9") )
 
+	//logExample()
+	//fileExample()
 
 }
 
-func logExample()  {
+func logExample() {
 
 	//Logger
 	log.Critical("This is Critical!")
@@ -38,17 +42,16 @@ func logExample()  {
 	log.Info("This is Info!")
 	log.InfoF("This is %s!", "Info")
 
-	log.SetLogLevel( logger.ErrorLevel )
+	log.SetLogLevel(logger.ErrorLevel)
 
 	log.SetFormat("[%{module}] [%{level}] %{message}")
 	log.Warning("This is Warning!") // output: "[test] [WARNING] This is Warning!"
 	// Also you can set your format as default format for all new loggers
 	logger.SetDefaultFormat("%{message}")
 
-
 }
 
-func fileExample()  {
+func fileExample() {
 
 	//create directory pointer
 	dir := path.Dir("c:/workingdir/test1/test2")
@@ -69,11 +72,11 @@ func fileExample()  {
 	fp.Append("\nNew line")
 
 	//get file content
-	content,_ := fp.Content()
+	content, _ := fp.Content()
 	fmt.Println(content)
 
 	//return absolute path of file
-	abs,_ := fp.Absolute()
+	abs, _ := fp.Absolute()
 	fmt.Println(abs)
 
 	//create pointer to file
@@ -89,7 +92,7 @@ func fileExample()  {
 	fp.Remove()
 
 	//find files inside directory
-	files,_ := dir.Find("*,txt")
+	files, _ := dir.Find("*,txt")
 	fmt.Println(files)
 
 	//go to parent dir
@@ -97,8 +100,8 @@ func fileExample()  {
 	parent.File("parent.file").Create("test data")
 
 	//get current working directory
-	current,_ := path.Current()
-	files,_ = current.Find("*")
+	current, _ := path.Current()
+	files, _ = current.Find("*")
 	fmt.Println(files)
 
 	//remove directory files
@@ -107,8 +110,4 @@ func fileExample()  {
 	//remove directory
 	dir.Remove()
 
-
-
-
 }
-
