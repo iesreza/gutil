@@ -8,21 +8,20 @@ import (
 	"sync"
 )
 
-type file struct{
+type file struct {
 	path string
-	mu sync.Mutex
+	mu   sync.Mutex
 }
-
 
 // File init file
 func File(path string) *file {
 	f := file{}
 	f.path = path
-	return  &f
+	return &f
 }
 
 // Append append to file
-func (f *file)Append(text string) error {
+func (f *file) Append(text string) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	fp, err := os.OpenFile(f.path, os.O_APPEND|os.O_WRONLY, 0644)
@@ -40,7 +39,7 @@ func (f *file)Append(text string) error {
 }
 
 // Write write to file
-func (f *file)Write(text string) error {
+func (f *file) Write(text string) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	ioutil.WriteFile(f.path, []byte(text), 0644)
@@ -48,7 +47,7 @@ func (f *file)Write(text string) error {
 }
 
 // Copy cope file to destination
-func (f *file)Copy(dest string) error  {
+func (f *file) Copy(dest string) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	in, err := os.Open(f.path)
@@ -71,49 +70,60 @@ func (f *file)Copy(dest string) error  {
 }
 
 // Create create file at location and write data
-func (f *file)Create(data string) error  {
+func (f *file) Create(data string) error {
+	f.Dir().Create()
 	return ioutil.WriteFile(f.path, []byte(data), 0644)
 }
 
+// GetDir return base directory
+func (f *file) GetDir() string {
+	return filepath.Dir(f.path)
+}
+
+// Dir return base directory as directory pointer
+func (f *file) Dir() *dir {
+	return Dir(f.GetDir())
+}
+
 // Remove remove file
-func (f *file)Remove() error {
+func (f *file) Remove() error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	return os.Remove(f.path)
 }
 
 // Remove move file
-func (f *file)Move(dest string) error {
+func (f *file) Move(dest string) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	err := f.Copy(dest)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	return f.Remove()
 }
 
 // Exist check if file exists
-func (f *file)Exist() bool {
+func (f *file) Exist() bool {
 	if _, err := os.Stat(f.path); os.IsNotExist(err) {
-		return  false
+		return false
 	}
 
 	return true
 }
 
 // Absolute return absolute path of file
-func (f *file)Absolute() (string,error) {
+func (f *file) Absolute() (string, error) {
 	return filepath.Abs(f.path)
 }
 
 // Content return file content as string
-func (f *file)Content() (string,error) {
+func (f *file) Content() (string, error) {
 	fp, err := ioutil.ReadFile(f.path) // just pass the file name
 	if err != nil {
-		return "",err
+		return "", err
 	}
 
-	return string(fp),nil
+	return string(fp), nil
 
 }
