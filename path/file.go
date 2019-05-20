@@ -46,7 +46,7 @@ func (f *file) Write(text string) error {
 	return nil
 }
 
-// Copy cope file to destination
+// Copy copy file to destination
 func (f *file) Copy(dest string) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -57,6 +57,29 @@ func (f *file) Copy(dest string) error {
 	defer in.Close()
 
 	out, err := os.Create(dest)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, in)
+	if err != nil {
+		return err
+	}
+	out.Close()
+	return nil
+}
+
+// Copy copy file from destination
+func (f *file) CopyFrom(src string) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	out, err := os.Create(f.path)
 	if err != nil {
 		return err
 	}
