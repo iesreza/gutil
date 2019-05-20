@@ -9,9 +9,9 @@ import (
 var log = logger.New()
 
 // Fatal is just like func l.Critical logger except that it is followed by exit to program
-func Fatal(message string) {
+func Fatal(format string, a ...interface{}) {
 
-	log.LogWrapped(logger.CriticalLevel, message)
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
 	os.Exit(1)
 }
 
@@ -28,9 +28,9 @@ func Fatalf(format string, a ...interface{}) {
 }
 
 // Panic is just like func l.Critical except that it is followed by a call to panic
-func Panic(message string) {
-	log.LogWrapped(logger.CriticalLevel, message)
-	panic(message)
+func Panic(format string, a ...interface{}) {
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
+	panic(fmt.Sprintf(format, a...))
 }
 
 // PanicF is just like func l.CriticalF except that it is followed by a call to panic
@@ -46,8 +46,8 @@ func Panicf(format string, a ...interface{}) {
 }
 
 // Critical logs a message at a Critical Level
-func Critical(message string) {
-	log.LogWrapped(logger.CriticalLevel, message)
+func Critical(format string, a ...interface{}) {
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
 }
 
 // CriticalF logs a message at Critical level using the same syntax and options as fmt.Printf
@@ -61,8 +61,8 @@ func Criticalf(format string, a ...interface{}) {
 }
 
 // Error logs a message at Error level
-func Error(message string) {
-	log.LogWrapped(logger.ErrorLevel, message)
+func Error(format string, a ...interface{}) {
+	log.LogWrapped(logger.ErrorLevel, fmt.Sprintf(format, a...))
 }
 
 // ErrorF logs a message at Error level using the same syntax and options as fmt.Printf
@@ -76,8 +76,8 @@ func Errorf(format string, a ...interface{}) {
 }
 
 // Warning logs a message at Warning level
-func Warning(WarningLevel, message string) {
-	log.Warning(message)
+func Warning(WarningLevel, format string, a ...interface{}) {
+	log.LogWrapped(logger.WarningLevel, fmt.Sprintf(format, a...))
 }
 
 // WarningF logs a message at Warning level using the same syntax and options as fmt.Printf
@@ -91,8 +91,8 @@ func Warningf(format string, a ...interface{}) {
 }
 
 // Notice logs a message at Notice level
-func Notice(message string) {
-	log.LogWrapped(logger.NoticeLevel, message)
+func Notice(format string, a ...interface{}) {
+	log.LogWrapped(logger.NoticeLevel, fmt.Sprintf(format, a...))
 }
 
 // NoticeF logs a message at Notice level using the same syntax and options as fmt.Printf
@@ -106,8 +106,8 @@ func Noticef(format string, a ...interface{}) {
 }
 
 // Info logs a message at Info level
-func Info(message string) {
-	log.LogWrapped(logger.InfoLevel, message)
+func Info(format string, a ...interface{}) {
+	log.LogWrapped(logger.InfoLevel, fmt.Sprintf(format, a...))
 }
 
 // InfoF logs a message at Info level using the same syntax and options as fmt.Printf
@@ -121,8 +121,8 @@ func Infof(format string, a ...interface{}) {
 }
 
 // Debug logs a message at Debug level
-func Debug(message string) {
-	log.LogWrapped(logger.DebugLevel, message)
+func Debug(format string, a ...interface{}) {
+	log.LogWrapped(logger.DebugLevel, fmt.Sprintf(format, a...))
 }
 
 // DebugF logs a message at Debug level using the same syntax and options as fmt.Printf
