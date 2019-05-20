@@ -23,7 +23,7 @@ type Config struct {
 func main() {
 	var config = Config{}
 
-	configurator := configuration.GetInstance(&config)
+	configurator := configuration.GetInstance(&config, ConfigVersion)
 	configurator.App = "gutil"
 	configurator.Load()
 

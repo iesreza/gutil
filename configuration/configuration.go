@@ -15,16 +15,18 @@ type cfg struct {
 	Type      string
 	Path      []string
 	vp        *viper.Viper
+	cversion  string
 	container interface{}
 }
 
-func GetInstance(container interface{}) *cfg {
+func GetInstance(container interface{}, cversion string) *cfg {
 	cfg := cfg{}
 	cfg.App = os.Args[0]
 	cfg.Path = []string{"/etc/" + cfg.App + "/", "$HOME/."}
 	cfg.Type = "json"
 	cfg.container = container
 	cfg.vp = viper.New()
+	cfg.cversion = cversion
 	return &cfg
 }
 
@@ -63,7 +65,9 @@ func (cfg cfg) Load() error {
 			}
 		}
 	}
-
+	if cfg.vp.IsSet("version") && cfg.vp.GetString("version") != cfg.cversion {
+		log.Error("Configuration version %s does not match application version %s", cfg.vp.GetString("version"), cfg.cversion)
+	}
 	return cfg.vp.Unmarshal(cfg.container)
 
 }
