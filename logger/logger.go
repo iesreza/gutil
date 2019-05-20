@@ -255,7 +255,7 @@ func initFormatPlaceholders() {
 // Returns a new instance of logger class, module is the specific module for which we are logging
 // , color defines whether the output is to be colored or not, out is instance of type io.Writer defaults
 // to os.Stderr
-func New(args ...interface{}) (*Logger) {
+func New(args ...interface{}) *Logger {
 	//initColors()
 
 	var module string = "DEFAULT"
@@ -286,6 +286,12 @@ func New(args ...interface{}) (*Logger) {
 // the degree of the messagethe user wants to log, message is the info user wants to log
 func (l *Logger) Log(lvl LogLevel, message string) {
 	l.log_internal(lvl, message, 2)
+}
+
+// The log commnand is the function available to user to log message from wrapped function, lvl specifies
+// the degree of the messagethe user wants to log, message is the info user wants to log
+func (l *Logger) LogWrapped(lvl LogLevel, message string) {
+	l.log_internal(lvl, message, 3)
 }
 
 func (l *Logger) log_internal(lvl LogLevel, message string, pos int) {

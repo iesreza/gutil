@@ -5,6 +5,7 @@ import (
 	"gutil/log"
 	"gutil/path"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -18,7 +19,7 @@ type cfg struct {
 }
 
 func GetInstance(container interface{}) (*cfg, *interface{}) {
-	cfg := configuration{}
+	cfg := cfg{}
 	cfg.App = os.Args[0]
 	cfg.Path = []string{"/etc/" + cfg.App + "/", "$HOME/."}
 	cfg.Type = "json"
@@ -27,30 +28,43 @@ func GetInstance(container interface{}) (*cfg, *interface{}) {
 	return &cfg, &cfg.container
 }
 
-func (cfg cfg) Load() *cfg {
-	cfg.vp.SetConfigName(cfg.App + ".conf")
-	for _, path := range cfg.Path {
-		cfg.vp.AddConfigPath(path)
-	}
-	cfg.vp.SetConfigType(cfg.Type)
-	err := cfg.vp.ReadInConfig()
-	if err != nil {
-		localConf := path.File("./" + cfg.App + ".conf")
-		if localConf.Exist() {
-			log.WarningF("Config cannot be found. try to create %s", cfg.Path[0])
-			p := path.Dir(cfg.Path[0])
-			p.Create()
-			localConf.Copy(strings.TrimRight(cfg.Path[0], "/") + "/" + cfg.App + ".conf")
-			cfg.load()
-		} else {
-			log.WarningF("Config cannot be found. new config cannot be created due default config is not exists.")
-			return nil
+func (cfg cfg) Load() error {
+	viper.Set("Verbose", true)
+	cfg.vp.SetConfigName(cfg.App + "." + cfg.Type)
+
+	if runtime.GOOS == "windows" {
+
+		cfg.vp.SetConfigFile("./" + cfg.App + "." + cfg.Type)
+		err := cfg.vp.ReadInConfig()
+		if err != nil {
+			log.WarningF("Config cannot be found. %s", err)
+			return err
+		}
+	} else {
+		for _, path := range cfg.Path {
+			cfg.vp.AddConfigPath(path)
+		}
+		cfg.vp.SetConfigType(cfg.Type)
+		err := cfg.vp.ReadInConfig()
+		if err != nil {
+			localConf := path.File("./" + cfg.App + "." + cfg.Type)
+			if localConf.Exist() {
+				log.WarningF("Config cannot be found. try to create %s", cfg.Path[0])
+				p := path.Dir(cfg.Path[0])
+				p.Create()
+				localConf.Copy(strings.TrimRight(cfg.Path[0], "/") + "/" + cfg.App + ".conf")
+				err = cfg.Load()
+				if err != nil {
+					return err
+				}
+			} else {
+				log.WarningF("Config cannot be found. new config cannot be created due default config is not exists.")
+				return nil
+			}
 		}
 	}
+	return cfg.vp.Unmarshal(&cfg.container)
 
-	cfg.vp.Unmarshal(&cfg.container)
-
-	return &cfg
 }
 
 func (cfg cfg) SetDefault(key string, value interface{}) *cfg {
@@ -96,5 +110,5 @@ func (cfg cfg) Set(key string, value interface{}) {
 }
 
 func (cfg cfg) Update() error {
-	return cfg.vp.SafeWriteConfig()
+	return cfg.vp.WriteConfig()
 }

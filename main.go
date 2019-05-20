@@ -2,21 +2,39 @@ package main
 
 import (
 	"fmt"
-	"github.com/iesreza/gutil/configuration"
-	"github.com/iesreza/gutil/logger"
-	"github.com/iesreza/gutil/path"
+	"gutil/configuration"
+	"gutil/logger"
+	"gutil/path"
+	"gutil/str"
 )
 
 var log = logger.New()
 
-func main() {
+// ConfigVersion returns the version, this should be incremented every time the config changes
+var ConfigVersion = "1.0.0"
 
-	configurator, config := configuration.GetInstance(&Config{})
+type Config struct {
+	Version          string
+	IntegerValue     int
+	StringValue      string
+	StringArrayValue []string
+}
+
+func main() {
+	var config = Config{}
+
+	configurator, _ := configuration.GetInstance(config)
+	configurator.App = "gutil"
 	configurator.Load()
 
-	fmt.Println(config)
-	//return
-	//fmt.Println( str.S(1.00000045).Trim("5").Quote().ReplaceAll("0","9") )
+	configurator.Set("IntegerValue", 10)
+	err := configurator.Update()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(config.IntegerValue)
+
+	fmt.Println(str.S(1.00000045).Trim("5").Quote().ReplaceAll("0", "9"))
 
 	//logExample()
 	//fileExample()
