@@ -76,7 +76,7 @@ func Errorf(format string, a ...interface{}) {
 }
 
 // Warning logs a message at Warning level
-func Warning(WarningLevel, format string, a ...interface{}) {
+func Warning(format string, a ...interface{}) {
 	log.LogWrapped(logger.WarningLevel, fmt.Sprintf(format, a...))
 }
 

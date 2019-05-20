@@ -7,6 +7,7 @@ import (
 	"gutil/logger"
 	"gutil/path"
 	"gutil/str"
+	"time"
 )
 
 var log = logger.New()
@@ -21,14 +22,31 @@ type Config struct {
 	StringArrayValue []string
 }
 
+type Session struct {
+	Expire int64
+	ID     string
+}
+
 func main() {
 	var list = linkedlist.List{}
-	list.Append(50)
-	list.Append(60)
-	list.Append(70)
 
+	list.SetMatchFunc(func(needle interface{}, el interface{}) bool {
+		return needle.(Session).ID == el.(Session).ID
+	})
+
+	list.PushOnce(Session{1558378380, "abcd1"})
+	list.PushOnce(Session{1568378380, "abcd2"})
+	list.PushOnce(Session{1538378380, "abcd3"})
+	list.PushOnce(Session{1533378380, "abcd4"})
 	fmt.Println(list.String())
-	list.Remove(20)
+
+	var v int64
+	v = time.Now().Unix()
+	list.RemoveFunc(v, func(needle interface{}, el interface{}) bool {
+
+		return needle.(int64) < el.(Session).Expire
+	})
+
 	fmt.Println(list.String())
 
 	return

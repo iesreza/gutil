@@ -2,6 +2,7 @@ package linkedlist
 
 import (
 	"fmt"
+	"strings"
 )
 
 type MatchFunc func(needle interface{}, el interface{}) bool
@@ -51,27 +52,57 @@ func (L *List) PushOnce(key interface{}) {
 }
 
 func (L *List) Remove(needle interface{}) {
-	mid := L.Find(needle)
-	if mid != nil {
-		nextNode := mid.next
-		prevNode := mid.prev
-		prevNode.next = nextNode
-		nextNode.prev = prevNode
-		mid = nil
-		L.length--
+	if L.Match != nil {
+		L.RemoveFunc(needle, L.Match)
+	} else {
+		for e := L.First(); e != nil; e = e.Next() {
+
+			if L.Match != nil && L.Match(needle, e.Value) {
+
+				if e != nil {
+					if e.prev != nil {
+						e.prev.next = e.next
+					} else {
+						L.head = e.next
+					}
+					if e.next != nil {
+						e.next.prev = e.prev
+					} else {
+						L.tail = e.prev
+					}
+
+					L.length--
+				}
+
+			}
+		}
 	}
 }
 
 func (L *List) RemoveFunc(needle interface{}, match MatchFunc) {
-	mid := L.FindFunc(needle, match)
-	if mid != nil {
-		nextNode := mid.next
-		prevNode := mid.prev
-		prevNode.next = nextNode
-		nextNode.prev = prevNode
-		mid = nil
-		L.length--
+
+	for e := L.First(); e != nil; e = e.Next() {
+
+		if match(needle, e.Value) {
+
+			if e != nil {
+				if e.prev != nil {
+					e.prev.next = e.next
+				} else {
+					L.head = e.next
+				}
+				if e.next != nil {
+					e.next.prev = e.prev
+				} else {
+					L.tail = e.prev
+				}
+
+				L.length--
+			}
+
+		}
 	}
+
 }
 
 func (L *List) Append(key interface{}) {
@@ -94,19 +125,20 @@ func (L *List) Append(key interface{}) {
 
 }
 
-func (L *List) Find(needle interface{}) *Node {
-	for e := L.First(); e != nil; e = e.Next() {
-		if L.Match == nil {
+func (L *List) Find(needle interface{}) []interface{} {
+
+	if L.Match != nil {
+		return L.FindFunc(needle, L.Match)
+	} else {
+		var ls []interface{}
+		for e := L.First(); e != nil; e = e.Next() {
 			if fmt.Sprint(e.Value) == fmt.Sprint(needle) {
-				return e
-			}
-		} else {
-			if L.Match(e, needle) {
-				return e
+				ls = append(ls, e.Value)
 			}
 		}
+		return ls
 	}
-	return nil
+
 }
 
 func (L *List) Contains(needle interface{}) bool {
@@ -116,7 +148,7 @@ func (L *List) Contains(needle interface{}) bool {
 				return true
 			}
 		} else {
-			if L.Match(e, needle) {
+			if L.Match(needle, e.Value) {
 				return true
 			}
 		}
@@ -126,24 +158,24 @@ func (L *List) Contains(needle interface{}) bool {
 
 func (L *List) ContainsFunc(needle interface{}, match MatchFunc) bool {
 	for e := L.First(); e != nil; e = e.Next() {
-		if match(e, needle) {
+		if match(needle, e.Value) {
 			return true
 		}
 	}
 	return false
 }
 
-func (L *List) FindFunc(needle interface{}, match MatchFunc) *Node {
+func (L *List) FindFunc(needle interface{}, match MatchFunc) []interface{} {
+	var ls []interface{}
 	for e := L.First(); e != nil; e = e.Next() {
-		if match(e, needle) {
-			return e
+		if match(needle, e.Value) {
+			ls = append(ls, e.Value)
 		}
 	}
-	return nil
+	return ls
 }
 
 func (L *List) First() *Node {
-
 	return L.head
 }
 
@@ -157,6 +189,9 @@ func (node *Node) Prev() *Node {
 }
 
 func (node *Node) Next() *Node {
+	if node == nil {
+		return nil
+	}
 	return node.next
 }
 
@@ -168,19 +203,19 @@ func (l *List) String() string {
 	res := ""
 	list := l.head
 	for list != nil {
-		res += fmt.Sprintf("%+v ->", list.Value)
+		res += fmt.Sprintf("%+v,", list.Value)
 		list = list.next
 	}
-	return res
+	return strings.TrimRight(res, ",")
 }
 
 func String(list *Node) string {
 	res := ""
 	for list != nil {
-		res += fmt.Sprintf("%v ->", list.Value)
+		res += fmt.Sprintf("%v,", list.Value)
 		list = list.next
 	}
-	return res
+	return strings.TrimRight(res, ",")
 }
 
 func (l *List) Reverse() {
