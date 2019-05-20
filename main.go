@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"gutil/configuration"
+	"gutil/linkedlist"
 	"gutil/logger"
 	"gutil/path"
 	"gutil/str"
@@ -21,6 +22,16 @@ type Config struct {
 }
 
 func main() {
+	var list = linkedlist.List{}
+	list.Append(50)
+	list.Append(60)
+	list.Append(70)
+
+	fmt.Println(list.String())
+	list.Remove(20)
+	fmt.Println(list.String())
+
+	return
 	var config = Config{}
 
 	configurator := configuration.GetInstance(&config, ConfigVersion)
