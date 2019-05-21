@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"gutil/configuration"
-	"gutil/linkedlist"
-	"gutil/logger"
-	"gutil/path"
-	"gutil/str"
+	"github.com/iesreza/gutil/configuration"
+	"github.com/iesreza/gutil/linkedlist"
+	"github.com/iesreza/gutil/logger"
+	"github.com/iesreza/gutil/path"
+	"github.com/iesreza/gutil/str"
 	"time"
 )
 

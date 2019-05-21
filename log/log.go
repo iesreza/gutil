@@ -2,7 +2,7 @@ package log
 
 import (
 	"fmt"
-	"gutil/logger"
+	"github.com/iesreza/gutil/logger"
 	"os"
 )
 

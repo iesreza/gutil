@@ -1,9 +1,9 @@
 package configuration
 
 import (
+	"github.com/iesreza/gutil/log"
+	"github.com/iesreza/gutil/path"
 	"github.com/spf13/viper"
-	"gutil/log"
-	"gutil/path"
 	"os"
 	"runtime"
 	"strings"
