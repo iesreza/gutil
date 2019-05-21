@@ -44,10 +44,11 @@ func (cfg cfg) Load() error {
 			return err
 		}
 	} else {
-		for _, path := range cfg.Path {
+		/*for _, path := range cfg.Path {
 			cfg.vp.AddConfigPath(path)
 		}
-		cfg.vp.SetConfigType(cfg.Type)
+		cfg.vp.SetConfigType(cfg.Type)*/
+		cfg.vp.SetConfigFile("./" + cfg.App + "." + cfg.Type)
 		err := cfg.vp.ReadInConfig()
 		if err != nil {
 			localConf := path.File("./" + cfg.App + "." + cfg.Type)
