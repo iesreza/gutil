@@ -5,6 +5,7 @@ import (
 	"github.com/iesreza/gutil/path"
 	"github.com/spf13/viper"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
@@ -21,7 +22,7 @@ type cfg struct {
 
 func GetInstance(container interface{}, cversion string) *cfg {
 	cfg := cfg{}
-	cfg.App = os.Args[0]
+	_, cfg.App = filepath.Split(os.Args[0])
 	cfg.Path = []string{"/etc/" + cfg.App + "/", "$HOME/."}
 	cfg.Type = "json"
 	cfg.container = container
