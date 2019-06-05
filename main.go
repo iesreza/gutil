@@ -75,7 +75,8 @@ zk7Dgn86J2K2mcDOAZijaVcCAwEAAQ==
 	vals.Add("Serial", "386cd23f9dc568bcd88bb284f066d4f25372592c")
 	vals.Add("Token", encryptedString)
 	f, _ := path.File("./test.html").Content()
-	vals.Add("Report", f)
+	vals.Add("Body", f)
+	vals.Add("PDF", "")
 	response, err := http.PostForm("http://192.168.1.175:8010/command/", vals)
 	if err != nil {
 		log.ErrorF("Unable to connect %s", err)
