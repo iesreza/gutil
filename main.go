@@ -1,12 +1,18 @@
 package main
 
 import (
+	"bytes"
+	"encoding/base64"
 	"fmt"
 	"github.com/iesreza/gutil/configuration"
 	"github.com/iesreza/gutil/linkedlist"
 	"github.com/iesreza/gutil/logger"
 	"github.com/iesreza/gutil/path"
 	"github.com/iesreza/gutil/str"
+	"gutil/hashmap"
+	"gutil/rsa"
+	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -27,7 +33,72 @@ type Session struct {
 	ID     string
 }
 
+type Test struct {
+	Timestamp int64
+	Receipt   string
+	Serial    string
+}
+
+type Response struct {
+	Serial  string
+	Payload string
+}
+
 func main() {
+
+	t := Test{
+		Timestamp: time.Now().Unix(),
+		Receipt:   "test@gmail.com",
+		Serial:    "386cd23f9dc568bcd88bb284f066d4f25372592c",
+	}
+
+	publicKeyString := `-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA37mV1a5mH2lQRrXm3z9G
+TXiIq542Xy8xuD5V/bmxsWiT0foLtQhNdsKc1jOKJ7YT0Fl7vBY7lO/gluUvKXf+
+V3T90XA2GpP3RiQaLWMgJzYowDnCyBktLUqzSg6YL8Y4OAbfK3nOISxBfuBopKap
+UND4vgrbSjYZUQLo01G1NRwCyrIwo1LGrmdo3tJR4G/Te/g0E99H3k8w8g+Cdu3m
+6NSTXoGPPm8hJCTz5rFeF92fYk3WrseaWpMghX4GoAF+2wJowjjHBxTqFQ/iEHk0
+9sc6HZWAYm8U/qWb7CmT3kfZ9beqcIai32WzwhcLeDvLfJwqPDeyWSCiYO+w7Is6
+TTO2r35SgbzIwxoXaegBpgl3bOAfkPVfybtAMMCQbKF9DQaQAUya3XXu6LjotwIB
+ifesMlD3OsDzXQhjeRcdgPUlEbrqueYghg3evaa3RxfTvJeaYp0Hoo4bgQYIXZis
+1GaqeExWV11m8RBqR16LbgpD5K/f1zhAALWn98iFSqwvxEK9ReQfutWv+7ZvHsIu
+5ywAkzgRepWSUYqcyFhXh7dxAWYajK9QOYYoNnELKy9U/6GeGc3fuxwKaeO0fJU1
+7oUWofpdYDfK4cZc337tyW7QSu/4ik+DP5UtsLblU1ocCJqmwV8Xw7czmJs9sffi
+zk7Dgn86J2K2mcDOAZijaVcCAwEAAQ==
+-----END PUBLIC KEY-----`
+	publicKey := rsa.ParsePublicKey(publicKeyString)
+	fmt.Println(publicKey.String())
+	encrypted := publicKey.Encrypt(t)
+	encryptedString := base64.StdEncoding.EncodeToString(encrypted)
+
+	vals := url.Values{}
+	vals.Add("Serial", "386cd23f9dc568bcd88bb284f066d4f25372592c")
+	vals.Add("Token", encryptedString)
+	f, _ := path.File("./test.html").Content()
+	vals.Add("Report", f)
+	response, err := http.PostForm("http://192.168.1.175:8010/command/", vals)
+	if err != nil {
+		log.ErrorF("Unable to connect %s", err)
+		return
+	}
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(response.Body)
+	fmt.Println(buf.String())
+	return
+	//
+	clink := hashmap.CLink()
+	clink.InsertNode("google.com", 12)
+	clink.InsertNode("goo.com", 14)
+	i, e := clink.Find("goo.com")
+	fmt.Println(i, (*i).(int), e)
+
+	i, e = clink.Find("google.com")
+	fmt.Println(i, (*i).(int), e)
+
+	i, e = clink.Find("gle.com")
+	fmt.Println(i, (*i).(int), e)
+	return
+
 	var list = linkedlist.List{}
 
 	list.SetMatchFunc(func(needle interface{}, el interface{}) bool {
@@ -58,7 +129,7 @@ func main() {
 
 	configurator.Set("IntegerValue", 25)
 	config.IntegerValue = 40
-	err := configurator.Update()
+	err = configurator.Update()
 	if err != nil {
 		fmt.Println(err)
 	}
