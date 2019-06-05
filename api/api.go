@@ -85,7 +85,7 @@ func (api *API) Type(t apiType) *API {
 	return api
 }
 
-func (a *API) Fresh(key, value string) *API {
+func (a *API) Fresh() *API {
 	freshApi := API{
 		Url:     a.Url,
 		method:  a.method,
