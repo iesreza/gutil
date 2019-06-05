@@ -97,7 +97,7 @@ func (a *API) Fresh() *API {
 	return &freshApi
 }
 
-func (api *API) Call(key, value string) *API {
+func (api *API) Call() *API {
 	client := http.Client{}
 	req, err := http.NewRequest(api.method, api.Url, strings.NewReader(api.Data.Encode()))
 
