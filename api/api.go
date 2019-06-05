@@ -33,10 +33,11 @@ type API struct {
 	t          apiType
 }
 
-func New(url string) *API {
+func New(apiUrl string) *API {
 	obj := API{
-		Url:     url,
+		Url:     apiUrl,
 		Headers: make(map[string]string),
+		Data:    make(url.Values),
 	}
 
 	return &obj
@@ -91,6 +92,7 @@ func (a *API) Fresh() *API {
 		Url:     a.Url,
 		method:  a.method,
 		Headers: a.Headers,
+		Data:    make(url.Values),
 	}
 	return &freshApi
 }
