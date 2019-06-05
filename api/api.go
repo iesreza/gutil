@@ -20,7 +20,7 @@ const (
 	HTML apiType = 3
 )
 
-type api struct {
+type API struct {
 	Url        string
 	method     string
 	Data       url.Values
@@ -33,29 +33,29 @@ type api struct {
 	t          apiType
 }
 
-func New(url string) *api {
-	obj := api{
+func New(url string) *API {
+	obj := API{
 		Url: url,
 	}
 
 	return &obj
 }
 
-func (api *api) Method(method string) *api {
+func (api *API) Method(method string) *API {
 	api.method = method
 	return api
 }
 
-func (api *api) Param(key, value string) *api {
+func (api *API) Param(key, value string) *API {
 	api.Data.Add(key, value)
 	return api
 }
 
-func (api *api) Set(key, value string) *api {
+func (api *API) Set(key, value string) *API {
 	return api.Param(key, value)
 }
 
-func (api *api) File(key, path string) *api {
+func (api *API) File(key, path string) *API {
 	s, err := path2.File(path).Content()
 	if err != nil {
 		log.Error("Unable to attach file %s", err)
@@ -64,17 +64,17 @@ func (api *api) File(key, path string) *api {
 	return api.Param(key, s)
 }
 
-func (api *api) Header(key, value string) *api {
+func (api *API) Header(key, value string) *API {
 	api.Headers[key] = value
 	return api
 }
 
-func (api *api) ContentType(value string) *api {
+func (api *API) ContentType(value string) *API {
 	api.Headers["ContentType"] = value
 	return api
 }
 
-func (api *api) Type(t apiType) *api {
+func (api *API) Type(t apiType) *API {
 	api.t = t
 	if t == JSON {
 		api.ContentType("application/json")
@@ -85,8 +85,8 @@ func (api *api) Type(t apiType) *api {
 	return api
 }
 
-func (a *api) Fresh(key, value string) *api {
-	freshApi := api{
+func (a *API) Fresh(key, value string) *API {
+	freshApi := API{
 		Url:     a.Url,
 		method:  a.method,
 		Headers: a.Headers,
@@ -94,7 +94,7 @@ func (a *api) Fresh(key, value string) *api {
 	return &freshApi
 }
 
-func (api *api) Call(key, value string) *api {
+func (api *API) Call(key, value string) *API {
 	client := http.Client{}
 	req, err := http.NewRequest(api.method, api.Url, strings.NewReader(api.Data.Encode()))
 
@@ -124,21 +124,21 @@ func (api *api) Call(key, value string) *api {
 	return api
 }
 
-func (api *api) String() string {
+func (api *API) String() string {
 	return string(api.Result)
 }
 
-func (api *api) Bytes() []byte {
+func (api *API) Bytes() []byte {
 	return api.Result
 }
 
-func (api *api) JSON() (interface{}, error) {
+func (api *API) JSON() (interface{}, error) {
 	var obj interface{}
 	err := json.Unmarshal(api.Result, &obj)
 	return obj, err
 }
 
-func (api *api) Scan(obj *interface{}) (interface{}, error) {
+func (api *API) Scan(obj *interface{}) (interface{}, error) {
 	err := json.Unmarshal(api.Result, &obj)
 	return obj, err
 }
