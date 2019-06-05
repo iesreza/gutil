@@ -48,7 +48,6 @@ func main() {
 
 	t := Test{
 		Timestamp: time.Now().Unix(),
-		Receipt:   "test@gmail.com",
 		Serial:    "386cd23f9dc568bcd88bb284f066d4f25372592c",
 	}
 
@@ -74,9 +73,11 @@ zk7Dgn86J2K2mcDOAZijaVcCAwEAAQ==
 	vals := url.Values{}
 	vals.Add("Serial", "386cd23f9dc568bcd88bb284f066d4f25372592c")
 	vals.Add("Token", encryptedString)
-	f, _ := path.File("./test.html").Content()
-	vals.Add("Body", f)
-	vals.Add("PDF", "")
+	vals.Add("Subject", "This is a test mail")
+	f, _ := path.File("./test.pdf").Content()
+	vals.Add("Receipt", "reza@ies-italia.it")
+	vals.Add("Body", "test email")
+	vals.Add("Attachment", f)
 	response, err := http.PostForm("http://192.168.1.175:8010/command/", vals)
 	if err != nil {
 		log.ErrorF("Unable to connect %s", err)
