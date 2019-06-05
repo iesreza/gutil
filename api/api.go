@@ -35,7 +35,8 @@ type API struct {
 
 func New(url string) *API {
 	obj := API{
-		Url: url,
+		Url:     url,
+		Headers: make(map[string]string),
 	}
 
 	return &obj
