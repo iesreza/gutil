@@ -3,11 +3,14 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"gutil/log"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"reflect"
+	"strconv"
 )
 
 type apiType int
@@ -37,6 +40,7 @@ func New(apiUrl string) *API {
 		Headers: make(map[string]string),
 		Data:    make(map[string]string),
 		Files:   make(map[string]string),
+		method:  "POST",
 	}
 
 	return &obj
@@ -52,11 +56,49 @@ func (api *API) Param(key, value string) *API {
 	return api
 }
 
-func (api *API) Set(key, value string) *API {
-	return api.Param(key, value)
+func (api *API) SetInterface(key string, v interface{}) {
+	switch t := v.(type) {
+	case int:
+		api.Param(key, strconv.Itoa(t))
+	case int32:
+		api.Param(key, string(int64(t)))
+	case int64:
+		api.Param(key, string(t))
+	case float64:
+		api.Param(key, strconv.FormatFloat(t, 'f', 6, 64))
+	case float32:
+		api.Param(key, fmt.Sprintf("%f", t))
+	case string:
+		api.Param(key, t)
+	case bool:
+		api.Param(key, strconv.FormatBool(t))
+	default:
+		b, _ := json.Marshal(t)
+		api.Param(key, string(b))
+	}
 }
 
-func (api *API) File(key, path string) *API {
+func (api *API) Set(data interface{}) *API {
+	ref := reflect.ValueOf(data)
+
+	switch ref.Kind() {
+	case reflect.Map:
+		for _, e := range ref.MapKeys() {
+			v := ref.MapIndex(e)
+			api.SetInterface(e.String(), v.Interface())
+		}
+	case reflect.Struct:
+		keys := reflect.Indirect(ref)
+		for i := 0; i < ref.NumField(); i++ {
+			api.SetInterface(keys.Type().Field(i).Name, ref.Field(i).Interface())
+		}
+	}
+
+	return api
+
+}
+
+func (api *API) Attach(key, path string) *API {
 	api.Files[key] = path
 	return api
 }
@@ -160,7 +202,7 @@ func (api *API) JSON() (interface{}, error) {
 	return obj, err
 }
 
-func (api *API) Scan(obj *interface{}) error {
+func (api *API) Scan(obj interface{}) error {
 	err := json.Unmarshal(api.Result, &obj)
 	return err
 }
