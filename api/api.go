@@ -72,7 +72,7 @@ func (api *API) Header(key, value string) *API {
 }
 
 func (api *API) ContentType(value string) *API {
-	api.Headers["ContentType"] = value
+	api.Headers["Content-Type"] = value
 	return api
 }
 
@@ -100,6 +100,9 @@ func (a *API) Fresh() *API {
 func (api *API) Call() *API {
 	client := http.Client{}
 	req, err := http.NewRequest(api.method, api.Url, strings.NewReader(api.Data.Encode()))
+	if _, ok := api.Headers["Content-Type"]; !ok {
+		api.Headers["Content-Type"] = "application/x-www-form-urlencoded"
+	}
 
 	for key, val := range api.Headers {
 		req.Header.Add(key, val)
