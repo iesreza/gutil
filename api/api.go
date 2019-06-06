@@ -107,7 +107,7 @@ func (api *API) Call() *API {
 
 	api.Response, api.Error = client.Do(req)
 	if api.Error != nil {
-		log.Error(err.Error())
+		log.Error(api.Error.Error())
 	}
 
 	api.StatusCode = api.Response.StatusCode
