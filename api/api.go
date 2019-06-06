@@ -99,19 +99,18 @@ func (a *API) Fresh() *API {
 
 func (api *API) Call() *API {
 	client := &http.Client{}
-	_ = client
 	req, err := http.NewRequest(api.method, api.Url, strings.NewReader(api.Data.Encode()))
 
 	for key, val := range api.Headers {
 		req.Header.Set(key, val)
 	}
 
-	api.Response, api.Error = client.Do(req)
-
+	//api.Response, api.Error = client.Do(req)
+	api.Response, api.Error = client.PostForm(api.Url, api.Data)
 	if api.Error != nil {
 		log.Error(api.Error.Error())
 	}
-	//	defer api.Response.Body.Close()
+	defer api.Response.Body.Close()
 
 	api.StatusCode = api.Response.StatusCode
 	api.Status = api.Response.Status
