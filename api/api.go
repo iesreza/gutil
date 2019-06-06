@@ -1,15 +1,13 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
-	"errors"
-	"fmt"
-	path2 "github.com/iesreza/gutil/path"
 	"gutil/log"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
-	"net/url"
-	"strings"
+	"os"
 )
 
 type apiType int
@@ -23,21 +21,22 @@ const (
 type API struct {
 	Url        string
 	method     string
-	Data       url.Values
+	Data       map[string]string
 	Headers    map[string]string
+	Files      map[string]string
 	Result     []byte
 	Error      error
 	Response   *http.Response
 	StatusCode int
 	Status     string
-	t          apiType
 }
 
 func New(apiUrl string) *API {
 	obj := API{
 		Url:     apiUrl,
 		Headers: make(map[string]string),
-		Data:    make(url.Values),
+		Data:    make(map[string]string),
+		Files:   make(map[string]string),
 	}
 
 	return &obj
@@ -49,7 +48,7 @@ func (api *API) Method(method string) *API {
 }
 
 func (api *API) Param(key, value string) *API {
-	api.Data.Add(key, value)
+	api.Data[key] = value
 	return api
 }
 
@@ -58,12 +57,8 @@ func (api *API) Set(key, value string) *API {
 }
 
 func (api *API) File(key, path string) *API {
-	s, err := path2.File(path).Content()
-	if err != nil {
-		log.Error("Unable to attach file %s", err)
-		return api
-	}
-	return api.Param(key, s)
+	api.Files[key] = path
+	return api
 }
 
 func (api *API) Header(key, value string) *API {
@@ -71,60 +66,82 @@ func (api *API) Header(key, value string) *API {
 	return api
 }
 
-func (api *API) ContentType(value string) *API {
-	api.Headers["Content-Type"] = value
-	return api
-}
-
-func (api *API) Type(t apiType) *API {
-	api.t = t
-	if t == JSON {
-		api.ContentType("application/json")
-	}
-	if t == HTML || t == TEXT {
-		api.ContentType("text/plain")
-	}
-	return api
-}
-
 func (a *API) Fresh() *API {
-	freshApi := API{
-		Url:     a.Url,
-		method:  a.method,
-		Headers: a.Headers,
-		Data:    make(url.Values),
-	}
-	return &freshApi
+	freshApi := New(a.Url)
+	freshApi.method = a.method
+	freshApi.Headers = a.Headers
+
+	return freshApi
 }
 
 func (api *API) Call() *API {
 	client := &http.Client{}
-	req, err := http.NewRequest(api.method, api.Url, strings.NewReader(api.Data.Encode()))
 
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+
+	for key, path := range api.Files {
+
+		file, err := os.Open(path)
+		if err != nil {
+			log.Error("Unable to open file %s", err)
+			api.Error = err
+			return api
+		}
+		fileContents, err := ioutil.ReadAll(file)
+		if err != nil {
+			log.Error("Unable to read file %s", err)
+			api.Error = err
+			return api
+		}
+		fi, err := file.Stat()
+		if err != nil {
+			log.Error("Unable to get stat of file %s", err)
+			api.Error = err
+			return api
+		}
+		file.Close()
+
+		part, err := writer.CreateFormFile(key, fi.Name())
+		if err != nil {
+			log.Error("Unable to write the field %s", err)
+			api.Error = err
+			return api
+		}
+		part.Write(fileContents)
+
+	}
+
+	for key, val := range api.Data {
+		writer.WriteField(key, val)
+	}
+	err := writer.Close()
+	if err != nil {
+		log.Error("Unable to close writer %s", err)
+		api.Error = err
+		return api
+	}
+
+	req, err := http.NewRequest(api.method, api.Url, body)
+
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	for key, val := range api.Headers {
 		req.Header.Set(key, val)
 	}
 
-	//api.Response, api.Error = client.Do(req)
-	api.Response, api.Error = client.PostForm(api.Url, api.Data)
+	api.Response, api.Error = client.Do(req)
+
+	//api.Response, api.Error = client.PostForm(api.Url, api.Data)
 	if api.Error != nil {
+		api.Error = err
 		log.Error(api.Error.Error())
 	}
 	defer api.Response.Body.Close()
 
 	api.StatusCode = api.Response.StatusCode
 	api.Status = api.Response.Status
-	api.Error = err
+
 	api.Result, _ = ioutil.ReadAll(api.Response.Body)
-
-	if api.t == JSON || api.StatusCode == 200 {
-		if !isJSON(api.String()) {
-			if err == nil {
-				api.Error = errors.New(fmt.Sprintf("Invalid JSON format %s", api.String()))
-			}
-
-		}
-	}
 
 	return api
 }
@@ -143,13 +160,7 @@ func (api *API) JSON() (interface{}, error) {
 	return obj, err
 }
 
-func (api *API) Scan(obj *interface{}) (interface{}, error) {
+func (api *API) Scan(obj *interface{}) error {
 	err := json.Unmarshal(api.Result, &obj)
-	return obj, err
-}
-
-func isJSON(s string) bool {
-	var js map[string]interface{}
-	return json.Unmarshal([]byte(s), &js) == nil
-
+	return err
 }

@@ -11,8 +11,11 @@ import (
 	"github.com/iesreza/gutil/str"
 	"gutil/hashmap"
 	"gutil/rsa"
+	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 )
 
@@ -66,7 +69,7 @@ ifesMlD3OsDzXQhjeRcdgPUlEbrqueYghg3evaa3RxfTvJeaYp0Hoo4bgQYIXZis
 zk7Dgn86J2K2mcDOAZijaVcCAwEAAQ==
 -----END PUBLIC KEY-----`
 	publicKey := rsa.ParsePublicKey(publicKeyString)
-	fmt.Println(publicKey.String())
+
 	encrypted := publicKey.Encrypt(t)
 	encryptedString := base64.StdEncoding.EncodeToString(encrypted)
 
@@ -78,7 +81,18 @@ zk7Dgn86J2K2mcDOAZijaVcCAwEAAQ==
 	vals.Add("Receipt", "reza@ies-italia.it")
 	vals.Add("Body", "test email")
 	vals.Add("Attachment", f)
-	response, err := http.PostForm("http://192.168.1.175:8010/command/", vals)
+
+	email, _ := path.File("./email.html").Content()
+	data := map[string]string{
+		"Serial":  "386cd23f9dc568bcd88bb284f066d4f25372592c",
+		"Token":   encryptedString,
+		"Subject": "Test email with attachment",
+		"Receipt": "reza@ies-italia.it",
+		"Body":    email,
+	}
+
+	//response, err := http.PostForm("http://192.168.1.175:8010/command/", vals)
+	response, err := UploadFile("http://192.168.1.175:8010/command/", data, "Attachment", "C:/Users/mreza/go/src/gutil/test.pdf")
 	if err != nil {
 		log.ErrorF("Unable to connect %s", err)
 		return
@@ -231,5 +245,44 @@ func fileExample() {
 
 	//remove directory
 	dir.Remove()
+
+}
+
+func UploadFile(uri string, params map[string]string, paramName, path string) (*http.Response, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	fileContents, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+	fi, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+	file.Close()
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile(paramName, fi.Name())
+	if err != nil {
+		return nil, err
+	}
+	part.Write(fileContents)
+
+	for key, val := range params {
+		_ = writer.WriteField(key, val)
+	}
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	req, _ := http.NewRequest("POST", uri, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	//req.Header.Set("Content-Type","multipart/form-data")
+	client := &http.Client{}
+	return client.Do(req)
 
 }
