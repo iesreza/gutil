@@ -98,20 +98,20 @@ func (a *API) Fresh() *API {
 }
 
 func (api *API) Call() *API {
-	client := http.Client{}
+	client := &http.Client{}
+	_ = client
 	req, err := http.NewRequest(api.method, api.Url, strings.NewReader(api.Data.Encode()))
-	if _, ok := api.Headers["Content-Type"]; !ok {
-		api.Headers["Content-Type"] = "application/x-www-form-urlencoded"
-	}
 
 	for key, val := range api.Headers {
-		req.Header.Add(key, val)
+		req.Header.Set(key, val)
 	}
 
 	api.Response, api.Error = client.Do(req)
+
 	if api.Error != nil {
 		log.Error(api.Error.Error())
 	}
+	//	defer api.Response.Body.Close()
 
 	api.StatusCode = api.Response.StatusCode
 	api.Status = api.Response.Status
