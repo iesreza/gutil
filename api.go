@@ -4,54 +4,53 @@ import (
 	"encoding/base64"
 	"fmt"
 	"gutil/api"
-	"gutil/path"
 	"gutil/rsa"
 	"time"
 )
 
 type T struct {
-	Timestamp int64
-	Serial    string
+	Timestamp int64  `json:'timestamp'`
+	Username  string `json:"username"`
 }
 
 func main() {
 	t := T{
 		Timestamp: time.Now().Unix(),
-		Serial:    "386cd23f9dc568bcd88bb284f066d4f25372592c",
+		Username:  "admin",
 	}
 
 	publicKeyString := `-----BEGIN PUBLIC KEY-----
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA37mV1a5mH2lQRrXm3z9G
-TXiIq542Xy8xuD5V/bmxsWiT0foLtQhNdsKc1jOKJ7YT0Fl7vBY7lO/gluUvKXf+
-V3T90XA2GpP3RiQaLWMgJzYowDnCyBktLUqzSg6YL8Y4OAbfK3nOISxBfuBopKap
-UND4vgrbSjYZUQLo01G1NRwCyrIwo1LGrmdo3tJR4G/Te/g0E99H3k8w8g+Cdu3m
-6NSTXoGPPm8hJCTz5rFeF92fYk3WrseaWpMghX4GoAF+2wJowjjHBxTqFQ/iEHk0
-9sc6HZWAYm8U/qWb7CmT3kfZ9beqcIai32WzwhcLeDvLfJwqPDeyWSCiYO+w7Is6
-TTO2r35SgbzIwxoXaegBpgl3bOAfkPVfybtAMMCQbKF9DQaQAUya3XXu6LjotwIB
-ifesMlD3OsDzXQhjeRcdgPUlEbrqueYghg3evaa3RxfTvJeaYp0Hoo4bgQYIXZis
-1GaqeExWV11m8RBqR16LbgpD5K/f1zhAALWn98iFSqwvxEK9ReQfutWv+7ZvHsIu
-5ywAkzgRepWSUYqcyFhXh7dxAWYajK9QOYYoNnELKy9U/6GeGc3fuxwKaeO0fJU1
-7oUWofpdYDfK4cZc337tyW7QSu/4ik+DP5UtsLblU1ocCJqmwV8Xw7czmJs9sffi
-zk7Dgn86J2K2mcDOAZijaVcCAwEAAQ==
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAs2G3sB8yvQ+EsB69H7+k
+6pctFXp4X8VBDg+y/uk588BX1lRDw+Y295PKzQ7qiOULtxcKfZhtPywGaDnJU3Je
+iR/rSF5mdE8YV50JjkSDkBykuTZNE56sZdcbl3f2I745VUxQMxGG8AxjhBAllm4r
++ULgfi08zZUoPJ1yaSHrpQU2La3Az865cgoZ/sBdlo2P9OQbaSTP4uh7lztXkpdL
+SNpEBT9Iw7nXfmMQ/pK2jrWqcaXIHuhEkxqA7E9A+LKq7uvdccVSAvVNHKfGx4PC
+B2oGgLadXyywtNAk82n1XEz0zXhmi259p/ZIt4177wY/sYEzUn2ea3HQoRS+JyDb
+9Dmn9C9ouadObybuXerfpV15WU2dne+MquIAA8DQHrqEcZJ3+7KY8OQlG0m3pFf2
+pNlThsHjsWIRopQM2JYy4Auuqf3gsPUC5O7J/gciXKgd5VP49EeDhOnFsMEyHvEn
+iWTgnVyHAncBeMmWypf7cJiMEoEcWs/12WF9hj15Ol0VsU4NJAEvbt+CYAluM0sA
++ERZOWtCMjDYGuIaTgFPbOHhHi6uXpBjt09rDhxVFE21WUzWMjLotaekvB/MaZ0P
+s3s/NXqa8CEVRgqhCO0jBD4FpXBR35ggYnt4rfxspvzTjsYlNrtGVLkW3JeAraVg
+0ghaybMj5HZLxOfysfPpHQUCAwEAAQ==
 -----END PUBLIC KEY-----`
 	publicKey := rsa.ParsePublicKey(publicKeyString)
 
 	encrypted := publicKey.Encrypt(t)
 	encryptedString := base64.StdEncoding.EncodeToString(encrypted)
 
-	email, _ := path.File("./email.html").Content()
+	//email, _ := path.File("./email.html").Content()
 	data := map[string]string{
-		"Serial":  "386cd23f9dc568bcd88bb284f066d4f25372592c",
-		"Token":   encryptedString,
-		"Subject": "Test email with attachment",
-		"Receipt": "reza@ies-italia.it",
-		"Body":    email,
+		"serial":   "386cd23f9dc568bcd88bb284f066d4f25372592c",
+		"token":    encryptedString,
+		"amount":   "20",
+		"username": "admin",
 	}
 	_ = data
 
 	var res map[string]string
 
-	api.New("http://192.168.1.175:8010/command/").Set(data).Attach("Attachment", "./test.pdf").Call().Scan(&res)
+	x := api.New("http://192.168.1.175:8010/charge/").Set(data).Call()
+	x.Scan(&res)
 
-	fmt.Printf("%v", res)
+	fmt.Print(x)
 }

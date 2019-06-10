@@ -32,6 +32,7 @@ type API struct {
 	Response   *http.Response
 	StatusCode int
 	Status     string
+	debug      bool
 }
 
 func New(apiUrl string) *API {
@@ -48,6 +49,11 @@ func New(apiUrl string) *API {
 
 func (api *API) Method(method string) *API {
 	api.method = method
+	return api
+}
+
+func (api *API) Debug() *API {
+	api.debug = true
 	return api
 }
 
@@ -184,7 +190,9 @@ func (api *API) Call() *API {
 	api.Status = api.Response.Status
 
 	api.Result, _ = ioutil.ReadAll(api.Response.Body)
-
+	if api.debug {
+		log.Notice("Response:\n" + string(api.Result))
+	}
 	return api
 }
 
