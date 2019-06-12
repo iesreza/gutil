@@ -46,6 +46,14 @@ func (f *file) Write(text string) error {
 	return nil
 }
 
+// WriteBytes write to file
+func (f *file) WriteBytes(data []byte) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	ioutil.WriteFile(f.path, data, 0644)
+	return nil
+}
+
 // Copy copy file to destination
 func (f *file) Copy(dest string) error {
 	f.mu.Lock()

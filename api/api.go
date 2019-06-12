@@ -124,7 +124,9 @@ func (a *API) Fresh() *API {
 
 func (api *API) Call() *API {
 	client := &http.Client{}
-	log.Notice("API:%s", api.Url)
+	if api.debug {
+		log.Notice("API:%s", api.Url)
+	}
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 
