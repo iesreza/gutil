@@ -1,6 +1,7 @@
 package path
 
 import (
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"os"
@@ -157,4 +158,14 @@ func (f *file) Content() (string, error) {
 
 	return string(fp), nil
 
+}
+
+func (f *file) JSON(output *interface{}) error {
+	f.mu.Lock()
+	b, err := ioutil.ReadFile(f.path)
+	f.mu.Unlock()
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(b, output)
 }
