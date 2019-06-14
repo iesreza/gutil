@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"gutil/log"
+	"github.com/iesreza/gutil/log"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"

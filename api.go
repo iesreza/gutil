@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"gutil/api"
-	"gutil/rsa"
+	"github.com/iesreza/gutil/api"
+	"github.com/iesreza/gutil/rsa"
 	"time"
 )
 
