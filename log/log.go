@@ -9,128 +9,128 @@ import (
 var log = logger.New()
 
 // Fatal is just like func l.Critical logger except that it is followed by exit to program
-func Fatal(format string, a ...interface{}) {
+func Fatal(format interface{}, a ...interface{}) {
 
-	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 	os.Exit(1)
 }
 
 // FatalF is just like func l.CriticalF logger except that it is followed by exit to program
-func FatalF(format string, a ...interface{}) {
-	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
+func FatalF(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 	os.Exit(1)
 }
 
 // FatalF is just like func l.CriticalF logger except that it is followed by exit to program
-func Fatalf(format string, a ...interface{}) {
-	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
+func Fatalf(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 	os.Exit(1)
 }
 
 // Panic is just like func l.Critical except that it is followed by a call to panic
-func Panic(format string, a ...interface{}) {
-	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
-	panic(fmt.Sprintf(format, a...))
+func Panic(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(fmt.Sprint(format), a...))
+	panic(fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // PanicF is just like func l.CriticalF except that it is followed by a call to panic
-func PanicF(format string, a ...interface{}) {
-	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
-	panic(fmt.Sprintf(format, a...))
+func PanicF(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(fmt.Sprint(format), a...))
+	panic(fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // PanicF is just like func l.CriticalF except that it is followed by a call to panic
-func Panicf(format string, a ...interface{}) {
-	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
-	panic(fmt.Sprintf(format, a...))
+func Panicf(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(fmt.Sprint(format), a...))
+	panic(fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // Critical logs a message at a Critical Level
-func Critical(format string, a ...interface{}) {
-	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
+func Critical(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // CriticalF logs a message at Critical level using the same syntax and options as fmt.Printf
-func CriticalF(format string, a ...interface{}) {
-	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
+func CriticalF(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // CriticalF logs a message at Critical level using the same syntax and options as fmt.Printf
-func Criticalf(format string, a ...interface{}) {
-	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(format, a...))
+func Criticalf(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.CriticalLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // Error logs a message at Error level
-func Error(format string, a ...interface{}) {
-	log.LogWrapped(logger.ErrorLevel, fmt.Sprintf(format, a...))
+func Error(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.ErrorLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // ErrorF logs a message at Error level using the same syntax and options as fmt.Printf
-func ErrorF(format string, a ...interface{}) {
-	log.LogWrapped(logger.ErrorLevel, fmt.Sprintf(format, a...))
+func ErrorF(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.ErrorLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // ErrorF logs a message at Error level using the same syntax and options as fmt.Printf
-func Errorf(format string, a ...interface{}) {
-	log.LogWrapped(logger.ErrorLevel, fmt.Sprintf(format, a...))
+func Errorf(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.ErrorLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // Warning logs a message at Warning level
-func Warning(format string, a ...interface{}) {
-	log.LogWrapped(logger.WarningLevel, fmt.Sprintf(format, a...))
+func Warning(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.WarningLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // WarningF logs a message at Warning level using the same syntax and options as fmt.Printf
-func WarningF(format string, a ...interface{}) {
-	log.LogWrapped(logger.WarningLevel, fmt.Sprintf(format, a...))
+func WarningF(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.WarningLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // WarningF logs a message at Warning level using the same syntax and options as fmt.Printf
-func Warningf(format string, a ...interface{}) {
-	log.LogWrapped(logger.WarningLevel, fmt.Sprintf(format, a...))
+func Warningf(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.WarningLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // Notice logs a message at Notice level
-func Notice(format string, a ...interface{}) {
-	log.LogWrapped(logger.NoticeLevel, fmt.Sprintf(format, a...))
+func Notice(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.NoticeLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // NoticeF logs a message at Notice level using the same syntax and options as fmt.Printf
-func NoticeF(format string, a ...interface{}) {
-	log.LogWrapped(logger.NoticeLevel, fmt.Sprintf(format, a...))
+func NoticeF(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.NoticeLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // NoticeF logs a message at Notice level using the same syntax and options as fmt.Printf
-func Noticef(format string, a ...interface{}) {
-	log.LogWrapped(logger.NoticeLevel, fmt.Sprintf(format, a...))
+func Noticef(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.NoticeLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // Info logs a message at Info level
-func Info(format string, a ...interface{}) {
-	log.LogWrapped(logger.InfoLevel, fmt.Sprintf(format, a...))
+func Info(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.InfoLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // InfoF logs a message at Info level using the same syntax and options as fmt.Printf
-func InfoF(format string, a ...interface{}) {
-	log.LogWrapped(logger.InfoLevel, fmt.Sprintf(format, a...))
+func InfoF(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.InfoLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // InfoF logs a message at Info level using the same syntax and options as fmt.Printf
-func Infof(format string, a ...interface{}) {
-	log.LogWrapped(logger.InfoLevel, fmt.Sprintf(format, a...))
+func Infof(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.InfoLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // Debug logs a message at Debug level
-func Debug(format string, a ...interface{}) {
-	log.LogWrapped(logger.DebugLevel, fmt.Sprintf(format, a...))
+func Debug(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.DebugLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // DebugF logs a message at Debug level using the same syntax and options as fmt.Printf
-func DebugF(format string, a ...interface{}) {
-	log.LogWrapped(logger.DebugLevel, fmt.Sprintf(format, a...))
+func DebugF(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.DebugLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
 
 // DebugF logs a message at Debug level using the same syntax and options as fmt.Printf
-func Debugf(format string, a ...interface{}) {
-	log.LogWrapped(logger.DebugLevel, fmt.Sprintf(format, a...))
+func Debugf(format interface{}, a ...interface{}) {
+	log.LogWrapped(logger.DebugLevel, fmt.Sprintf(fmt.Sprint(format), a...))
 }
