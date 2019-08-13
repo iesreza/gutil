@@ -1,6 +1,9 @@
-package log
+package log_test
 
-import "testing"
+import (
+	"github.com/iesreza/gutil/log"
+	"testing"
+)
 
 func TestLog(t *testing.T) {
 
@@ -16,6 +19,6 @@ func TestLog(t *testing.T) {
 	log.Critical("This is critical")
 	log.Info("This is info")
 	log.WarningF("This is parametrized warning %d", 100)
-	//log.Error("Parametrized error %+v", data)
+	log.Error("Parametrized error %+v", data)
 
 }
