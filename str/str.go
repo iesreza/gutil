@@ -3,6 +3,7 @@ package str
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -14,7 +15,12 @@ type str struct {
 // S create string instance from any object
 func S(v interface{}) *str {
 	obj := str{}
-	obj.s = fmt.Sprintf("%v", v)
+	ref := reflect.TypeOf(v)
+	if ref.String() == "[]uint8" || ref.String() == "[]byte" {
+		obj.s = string(v.([]byte))
+	} else {
+		obj.s = fmt.Sprintf("%v", v)
+	}
 	return &obj
 }
 

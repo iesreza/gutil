@@ -1,5 +1,0 @@
-package byte
-
-func main() {
-
-}
