@@ -1,6 +1,10 @@
 package Bytes
 
-import "fmt"
+import (
+	"encoding/hex"
+	"fmt"
+	"strings"
+)
 
 func IndexOf(needle []byte, haystack []byte) int {
 	indicator := 0
@@ -34,7 +38,6 @@ func IndexOfWildcard(needle []int16, haystack []byte) int {
 
 		if needle[indicator] >= 0 && needle[indicator] <= 255 {
 			p = uint8(needle[indicator])
-			fmt.Println(indicator, haystackByte, p)
 			if haystackByte == p {
 				indicator++
 				res = i - indicator
@@ -46,7 +49,6 @@ func IndexOfWildcard(needle []int16, haystack []byte) int {
 				res = -1
 			}
 		} else {
-			fmt.Println(indicator, haystackByte, needle[indicator], "pass")
 			indicator++
 			res = i - indicator
 			if indicator == len(needle) {
@@ -58,5 +60,39 @@ func IndexOfWildcard(needle []int16, haystack []byte) int {
 	}
 
 	return res
+
+}
+
+var hexmap = map[uint8]uint8{}
+
+func StrToByteWildcard(str string) ([]int16, error) {
+	str = strings.ReplaceAll(str, " ", "")
+
+	var res []int16
+	if len(str)%2 != 0 {
+		return res, fmt.Errorf("input should be divide of 2")
+	}
+	p := 0
+	for {
+		if p < len(str)/2 {
+			b, err := hex.DecodeString(str[p*2 : p*2+2])
+			if err == nil {
+				res = append(res, int16(b[0]))
+			} else {
+				res = append(res, -1)
+			}
+		} else {
+			break
+		}
+		p++
+	}
+
+	return res, nil
+
+}
+
+func StrToBytes(str string) ([]byte, error) {
+
+	return hex.DecodeString(strings.ReplaceAll(str, " ", ""))
 
 }

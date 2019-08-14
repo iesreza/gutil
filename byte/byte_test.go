@@ -17,5 +17,12 @@ func TestByte(t *testing.T) {
 	//match wildcard
 	log.Error("Does haystack contains byte like needle? if yes index is =  %v", Bytes.IndexOfWildcard(byteLikeNeedle, haystack))
 
+	log.Error(Bytes.StrToBytes("00 01 02 0e"))
+
+	w, _ := Bytes.StrToByteWildcard("20 ?? 68 69")
+	log.Error(w)
+
+	log.Error("Does haystack contains byte like needle? if yes index is =  %v", Bytes.IndexOfWildcard(w, haystack))
+
 	//Always return -1 if not found
 }
