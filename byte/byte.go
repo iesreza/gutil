@@ -66,7 +66,7 @@ func IndexOfWildcard(needle []int16, haystack []byte) int {
 var hexmap = map[uint8]uint8{}
 
 func StrToByteWildcard(str string) ([]int16, error) {
-	str = strings.ReplaceAll(str, " ", "")
+	str = strings.Replace(str, " ", "", len(str))
 
 	var res []int16
 	if len(str)%2 != 0 {
@@ -93,6 +93,6 @@ func StrToByteWildcard(str string) ([]int16, error) {
 
 func StrToBytes(str string) ([]byte, error) {
 
-	return hex.DecodeString(strings.ReplaceAll(str, " ", ""))
+	return hex.DecodeString(strings.Replace(str, " ", "", len(str)))
 
 }
